@@ -1,0 +1,32 @@
+{
+    "success": true,
+    "lookupChain": {
+        "basketId": "basket_001",
+        "customerId": 1,
+        "phone": "+919876543210"
+    },
+    "basket": {
+        "total": 800,
+        "updatedTotal": 600,
+        "estimatedPoints": 18
+    },
+    "loyalty": {
+        "phone": "+919876543210",
+        "name": "Rahul Sharma",
+        "remainingPoints": 268,
+        "tier": "silver",
+        "tierMultiplier": "1.5",
+        "birthdayMultiplier": "1.5",
+        "totalMultiplier": "2.3",
+        "canRedeem": true,
+        "redeemOptions": [
+            {
+                "points": 200,
+                "discount": "₹200 OFF"
+            }
+        ]
+    },
+    "result": {
+        "status": "checked"
+    }
+}

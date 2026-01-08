@@ -22,7 +22,7 @@ function getRedeemableOptions(customer, maxDiscount) {
         if (customerPoints >= discount) {
             options.push({ 
                 points: discount, 
-                discount: `₹${discount} OFF` 
+                discount: `${discount} OFF` 
             });
         }
     });
@@ -31,34 +31,34 @@ function getRedeemableOptions(customer, maxDiscount) {
 }
 
 function isBirthday(customer) {
-  if (!customer.birthday) return 1.0;
+    if (!customer.birthday) return 1.0;
   
-  const birthdayDate = new Date(customer.birthday);
-  const today = new Date();
+    const birthdayDate = new Date(customer.birthday);
+    const today = new Date();
 
-  const isBirthdayToday = 
-    birthdayDate.getMonth() === today.getMonth() &&
-    birthdayDate.getDate() === today.getDate();
+    const isBirthdayToday = 
+        birthdayDate.getMonth() === today.getMonth() &&
+        birthdayDate.getDate() === today.getDate();
     
-  return isBirthdayToday ? 1.5 : 1.0;
+    return isBirthdayToday ? 1.5 : 1.0;
 }
 
 function verifyFoodhub(req, res, next) {
-  const apiKey = req.headers.authorization?.replace('Bearer ', '');
-  if (!apiKey) {
-    return res.status(401).json({ error: 'Missing API key' });
-  }
+    const apiKey = req.headers.authorization?.replace('Bearer ', '');
+    if (!apiKey) {
+        return res.status(401).json({ error: 'Missing API key' });
+    }
   
-  const partners = readJSON('partners');
-  const partner = partners.find(p => p.apiKey === apiKey && p.status === 'active');
+    const partners = readJSON('partners');
+    const partner = partners.find(p => p.apiKey === apiKey && p.status === 'active');
   
-  if (!partner || partner.partnerId !== 'foodhub') {
-    return res.status(401).json({ error: 'Invalid Foodhub API key' });
-  }
+    if (!partner || partner.partnerId !== 'foodhub') {
+        return res.status(401).json({ error: 'Invalid Foodhub API key' });
+    }
   
-  req.partner = partner;
-  console.log("Auth Done");
-  next();
+    req.partner = partner;
+    console.log("Auth Done");
+    next();
 }
 
 app.post('/api/loyalty/basket/:basketId', verifyFoodhub, (req, res) => {
