@@ -172,5 +172,5 @@ app.post('/api/loyalty/basket/:basketId', verifyFoodhub, (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log("Server Started!\n");
+    console.log("Server Started in PORT:", PORT);
 })

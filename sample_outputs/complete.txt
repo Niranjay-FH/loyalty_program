@@ -13,13 +13,18 @@
     "loyalty": {
         "phone": "+919876543210",
         "name": "Rahul Sharma",
-        "remainingPoints": 86,
+        "remainingPoints": 268,
         "tier": "silver",
         "tierMultiplier": "1.5",
         "birthdayMultiplier": "1.5",
         "totalMultiplier": "2.3",
-        "canRedeem": false,
-        "redeemOptions": []
+        "canRedeem": true,
+        "redeemOptions": [
+            {
+                "points": 200,
+                "discount": "200 OFF"
+            }
+        ]
     },
     "result": {
         "status": "completed",
