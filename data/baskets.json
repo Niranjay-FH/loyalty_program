@@ -21,9 +21,7 @@
     "subtotal": 725,
     "deliveryFee": 75,
     "total": 800,
-    "timestamp": "2026-01-08T14:30:00Z",
-    "originalTotal": 800,
-    "updatedTotal": 600
+    "timestamp": "2026-01-08T14:30:00Z"
   },
   {
     "basketId": "basket_002",
@@ -33,16 +31,16 @@
     "items": [
       {
         "name": "Idli Vada Combo",
-        "price": 180
+        "price": 80
       },
       {
         "name": "Filter Coffee",
         "price": 35
       }
     ],
-    "subtotal": 215,
+    "subtotal": 115,
     "deliveryFee": 35,
-    "total": 250,
+    "total": 150,
     "timestamp": "2026-01-08T14:35:00Z"
   }
 ]
