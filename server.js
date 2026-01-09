@@ -120,6 +120,26 @@ app.post('/api/loyalty/basket/:basketId', verifyFoodhub, (req, res) => {
                 updatedTotal: basket.total - maxRedeemable
             };
             writeJSON('baskets', baskets);
+            
+            // Add redeem entry to ledger and update counters
+            const counters = readJSON('counters');
+            const ledger = readJSON('points_ledger');
+
+            ledger.push({
+                ledgerId: `ledger_${counters.nextLedgerId++}`,
+                phone: customer.phone,
+                type: 'redeem',
+                points: -maxRedeemable,
+                orderId: basketId,
+                orderAmount: maxRedeemable,
+                tier: getTier(customer.totalSpent),
+                reason: `Redeem ${maxRedeemable}pts (capped)`,
+                timestamp: new Date().toISOString()
+            });
+
+            writeJSON('counters', counters);
+            writeJSON('points_ledger', ledger);
+
             result = { status: "redeemed", pointsUsed: maxRedeemable };
         }
 
