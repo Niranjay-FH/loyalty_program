@@ -14,19 +14,16 @@ console.log("App Initialised")
 //                     { points: 200, discount: '₹200 OFF' }
 //                 ] : []
 
-function getRedeemableOptions(customer, maxDiscount) {
-    const customerPoints = customer.points;
+function getRedeemableOptions(customer, maxDiscount, basketTotal) {
     const options = [];
-    
     maxDiscount.forEach(discount => {
-        if (customerPoints >= discount) {
+        if (customer.points >= discount && discount <= basketTotal) {
             options.push({ 
                 points: discount, 
                 discount: `${discount} OFF` 
             });
         }
     });
-    
     return options;
 }
 
@@ -64,6 +61,8 @@ function verifyFoodhub(req, res, next) {
 app.post('/api/loyalty/basket/:basketId', verifyFoodhub, (req, res) => {
     const { basketId } = req.params;
 
+    let checkFlag = false;
+
     const {
         action = "check",
         toRedeem = 0
@@ -88,7 +87,7 @@ app.post('/api/loyalty/basket/:basketId', verifyFoodhub, (req, res) => {
 
         const customer = customers[customerIndex];
 
-        // Calculate Points
+        // Calculate Points and Multipliers
         const totalSpent = customer.totalSpent || 0;
         const tierName = getTier(totalSpent);
         const tierMult = TIER[tierName]?.mult || 1.0;
@@ -96,15 +95,42 @@ app.post('/api/loyalty/basket/:basketId', verifyFoodhub, (req, res) => {
         const totalMult = birthdayMult * tierMult;
 
         let result = { status: "checked" };
+        
+        if (action === 'check') {
+            const companyMaxDiscounts = [200, 400, 600];  // TODO: update to dynamic
 
-        if (action === 'redeem' && toRedeem > 0) {
-            const maxRedeemable = Math.min(toRedeem, basket.total);
-            if (customer.points < maxRedeemable){
-                return res.json({
-                    success: false,
-                    error: "Insufficient Points"
+            for (let i = 0; i < companyMaxDiscounts.length; i++) {
+                let discount = companyMaxDiscounts[i];
+
+                if (customer.points >= discount && discount <= basket.total) {
+                    checkFlag = true;
+                    break;
+                }
+            }
+        }
+        else if (action === 'redeem' && toRedeem > 0) {
+            const companyMaxDiscounts = [200, 400, 600];
+    
+            // Check against allowed discounts
+            if (!companyMaxDiscounts.includes(toRedeem)) {
+                checkFlag = false;
+                return res.json({ 
+                    success: false, 
+                    error: `Invalid discount amount. Allowed: ${companyMaxDiscounts.join(', ')}` 
                 });
             }
+            
+            // Customer has enough points
+            if (customer.points < toRedeem) {
+                checkFlag = false;
+                return res.json({ 
+                    success: false, 
+                    error: `Insufficient points: ${customer.points}/${toRedeem}` 
+                });
+            }
+            
+            // Evaluate max redeemable points
+            const maxRedeemable = Math.min(toRedeem, basket.total);
 
             // Deduct from customer
             customer.points -= maxRedeemable;
@@ -142,7 +168,6 @@ app.post('/api/loyalty/basket/:basketId', verifyFoodhub, (req, res) => {
 
             result = { status: "redeemed", pointsUsed: maxRedeemable };
         }
-
         else if (action === 'complete') {
             const basePoints = Math.floor(basket.total * 0.01);
             const pointsEarned = Math.floor(basePoints * tierMult * birthdayMult);
@@ -177,9 +202,9 @@ app.post('/api/loyalty/basket/:basketId', verifyFoodhub, (req, res) => {
                 birthdayMultiplier: birthdayMult === 1.5 ? '1.5' : '1.0',
                 totalMultiplier: `${totalMult.toFixed(1)}`,
 
-                canRedeem: customer.points >= 200,
+                canRedeem: checkFlag ? true : false,
 
-                redeemOptions: getRedeemableOptions(customer, [200, 400, 600])
+                redeemOptions: getRedeemableOptions(customer, [200, 400, 600], basket.total)
             },
             result
         });
