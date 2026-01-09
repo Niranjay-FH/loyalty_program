@@ -3,11 +3,11 @@
     "customerId": 1,
     "phone": "+919876543210",
     "name": "Rahul Sharma",
-    "points": 268,
+    "points": 262,
     "tier": "silver",
     "birthday": "2004-01-08T00:00:00Z",
-    "totalSpent": 7450,
-    "orderCount": 9,
+    "totalSpent": 8250,
+    "orderCount": 10,
     "status": "active"
   },
   {

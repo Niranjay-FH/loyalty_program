@@ -8,16 +8,16 @@
     "basket": {
         "total": 800,
         "updatedTotal": 600,
-        "estimatedPoints": 18
+        "estimatedPoints": 12
     },
     "loyalty": {
         "phone": "+919876543210",
         "name": "Rahul Sharma",
-        "remainingPoints": 268,
+        "remainingPoints": 262,
         "tier": "silver",
         "tierMultiplier": "1.5",
-        "birthdayMultiplier": "1.5",
-        "totalMultiplier": "2.3",
+        "birthdayMultiplier": "1.0",
+        "totalMultiplier": "1.5",
         "canRedeem": true,
         "redeemOptions": [
             {
@@ -28,6 +28,6 @@
     },
     "result": {
         "status": "completed",
-        "pointsEarned": 18
+        "pointsEarned": 12
     }
 }

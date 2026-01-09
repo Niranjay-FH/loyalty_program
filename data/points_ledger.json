@@ -10,9 +10,8 @@
     "reason": "1% of order value (bronze)",
     "timestamp": "2026-01-07T13:35:00Z"
   },
-  
   {
-    "ledgerId": "ledger_002", 
+    "ledgerId": "ledger_002",
     "phone": "+919876543210",
     "type": "redeem",
     "points": -200,
@@ -22,7 +21,6 @@
     "reason": "200 points = ₹200 off",
     "timestamp": "2026-01-07T14:20:00Z"
   },
-
   {
     "ledgerId": "ledger_003",
     "phone": "+919876543210",
@@ -34,19 +32,17 @@
     "reason": "1.1% of order value (silver bonus)",
     "timestamp": "2026-01-08T12:45:00Z"
   },
-
   {
     "ledgerId": "ledger_004",
     "phone": "+919812345678",
     "type": "earn",
     "points": 4,
-    "orderId": "fh_order_126", 
+    "orderId": "fh_order_126",
     "orderAmount": 350,
     "storeId": "store_002",
     "reason": "1% of order value (bronze)",
     "timestamp": "2026-01-08T10:30:00Z"
   },
-
   {
     "ledgerId": "ledger_005",
     "phone": "+919876543210",
@@ -58,7 +54,6 @@
     "reason": "1.5% of order value (gold bonus)",
     "timestamp": "2026-01-08T19:20:00Z"
   },
-
   {
     "ledgerId": "ledger_006",
     "phone": "+919812345678",
@@ -69,5 +64,16 @@
     "storeId": "store_001",
     "reason": "1% of order value (bronze)",
     "timestamp": "2026-01-08T18:15:00Z"
+  },
+  {
+    "ledgerId": "ledger_7",
+    "phone": "+919876543210",
+    "type": "redeem",
+    "points": -200,
+    "orderId": "basket_001",
+    "orderAmount": 200,
+    "tier": "silver",
+    "reason": "Redeem 200pts (capped)",
+    "timestamp": "2026-01-09T05:34:56.792Z"
   }
 ]
