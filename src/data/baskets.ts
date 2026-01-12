@@ -44,6 +44,9 @@ export const baskets = [
     "subtotal": 115,
     "deliveryFee": 35,
     "total": 150,
-    "timestamp": "2026-01-08T14:35:00Z"
+    "timestamp": "2026-01-08T14:35:00Z",
+    "originalTotal": 150,
+    "updatedTotal": 0,
+    "pointsDiscount": 0
   }
 ];

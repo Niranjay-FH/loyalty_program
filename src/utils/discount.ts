@@ -1,6 +1,6 @@
 import { RedeemOption } from "../types/misc";
 import { Customer } from "../types/customer";
-import { Basket } from "../types/basket";
+import { BasketResponse } from "../types/basket";
 
 import { TIER, getTier } from './tier';
 import { isBirthday } from './misc'
@@ -24,7 +24,7 @@ export const getRedeemableOptions = (
   return options;
 };
 
-export function canRedeemPoints(customer: Customer, basket: Basket): boolean {
+export function canRedeemPoints(customer: Customer, basket: BasketResponse): boolean {
   for (const discount of [200, 400, 600]) {
     if (customer.points >= discount && discount <= basket.total!) {
       return true;

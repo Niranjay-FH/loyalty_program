@@ -1,4 +1,4 @@
-import type { Basket } from '../types/basket';
+import type { BasketEntity, BasketResponse } from '../types/basket';
 import type { Customer } from '../types/customer';
 
 import { customers } from '../data/customers';
@@ -14,7 +14,7 @@ export const writeData = (filename: string, data: any): void => {
   );
 };
 
-export function getCustomerDetails(basket: Basket): Customer | undefined {
+export function getCustomerDetails(basket: BasketResponse): Customer | undefined {
     return customers.find(
         (c: Customer) => c.customerId === basket.customerId
     );
@@ -22,10 +22,10 @@ export function getCustomerDetails(basket: Basket): Customer | undefined {
 
 export function getBasketDetails(
     basketId: string
-): Basket | undefined {
+): BasketEntity | undefined {
     console.log('Obtained Basket');
 
     return baskets.find(
-        (b: Basket) => b.basketId === basketId
+        (b: BasketEntity) => b.basketId === basketId
     );
 }

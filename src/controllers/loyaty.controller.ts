@@ -2,7 +2,9 @@ import { Request, Response } from 'express';
 import { getBasketDetails, getCustomerDetails } from '../utils/data';
 import { sendResponse, sendError } from '../utils/response';
 import { ErrorCodes } from '../utils/errors';
-import { LoyaltyService } from '../services/loyalty.services';
+import { getLoyaltyInfo } from '../services/loyalty.check';
+import { redeemPointsService  } from '../services/loyalty.redeem';
+import { completeOrderService } from '../services/loyalty.complete';
 
 export const checkBasket = (req: Request, res: Response) => {
     try {
@@ -18,7 +20,7 @@ export const checkBasket = (req: Request, res: Response) => {
             return sendError(res, ErrorCodes.CUSTOMER_NOT_FOUND);
         }
 
-        const data = LoyaltyService.getLoyaltyInfo(customer, basket);
+        const data = getLoyaltyInfo(customer, basket);
         sendResponse(res, true, data, 'Customer Can Redeem Points');
 
     } catch(error) {
@@ -58,7 +60,7 @@ export const redeemPoints = (req: Request, res: Response) => {
             });
         }
 
-        const data = LoyaltyService.redeemPoints(customer, basket, toRedeem);
+        const data = redeemPointsService(customer, basket, toRedeem);
         sendResponse(res, true, data, 'Points Redeemed Successfully');
 
     } catch(error) {
@@ -81,7 +83,7 @@ export const completeOrder = (req: Request, res: Response) => {
             return sendError(res, ErrorCodes.CUSTOMER_NOT_FOUND);
         }
 
-        const data = LoyaltyService.completeOrder(customer, basket);
+        const data = completeOrderService(customer, basket);
         sendResponse(res, true, data, 'Order Completed');
 
     } catch(error) {

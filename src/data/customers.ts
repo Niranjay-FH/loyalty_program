@@ -7,7 +7,7 @@ export const customers = [
     "tier": "silver",
     "birthday": "2004-01-08T00:00:00Z",
     "totalSpent": 9450,
-    "orderCount": 12,
+    "orderCount": 11,
     "status": "active"
   },
   {
@@ -16,7 +16,7 @@ export const customers = [
     "name": "Priya Singh",
     "points": 11,
     "tier": "bronze",
-    "birthday": "2004-01-08T00:00:00Z", 
+    "birthday": "2004-01-08T00:00:00Z",
     "totalSpent": 1070,
     "orderCount": 2,
     "status": "active"
