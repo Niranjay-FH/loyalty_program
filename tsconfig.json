@@ -10,7 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "types": ["node"]
+    "types": ["node"],
   },
   "include": ["src/**/*", "server.ts"],
   "exclude": ["node_modules"]

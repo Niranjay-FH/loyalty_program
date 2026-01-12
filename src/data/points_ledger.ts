@@ -98,5 +98,28 @@ export const points_ledger = [
     "multiplier": "1.5",
     "reason": "Earn on 600",
     "timestamp": "2026-01-11T12:04:39.341Z"
+  },
+  {
+    "ledgerId": "ledger_10",
+    "phone": "+919876543210",
+    "type": "redeem",
+    "points": -200,
+    "orderId": "basket_001",
+    "orderAmount": 200,
+    "tier": "silver",
+    "reason": "Redeem 200pts (capped)",
+    "timestamp": "2026-01-12T07:39:31.294Z"
+  },
+  {
+    "ledgerId": "ledger_11",
+    "phone": "+919876543210",
+    "type": "earn",
+    "points": 9,
+    "orderId": "basket_001",
+    "orderAmount": 600,
+    "tier": "silver",
+    "multiplier": "1.5",
+    "reason": "Earn on 600",
+    "timestamp": "2026-01-12T07:39:37.910Z"
   }
 ];

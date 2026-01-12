@@ -1,4 +1,4 @@
 export const counters = {
-  "nextLedgerId": 10,
+  "nextLedgerId": 12,
   "nextCustomerId": 3
 };
