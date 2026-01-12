@@ -5,5 +5,7 @@ export interface Customer {
   points: number;
   totalSpent: number;
   orderCount: number;
-  birthday?: string;
+  birthday: string;
+  tier: string;
+  status: string;
 }

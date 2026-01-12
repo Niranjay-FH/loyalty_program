@@ -1,4 +1,4 @@
-export const basket = [
+export const baskets = [
   {
     "basketId": "basket_001",
     "customerId": 1,
