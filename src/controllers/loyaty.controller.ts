@@ -1,21 +1,30 @@
 import { Request, Response } from 'express';
-import { getBasketDetails, getCustomerDetails } from '../utils/data';
+
 import { sendResponse, sendError } from '../utils/response';
 import { ErrorCodes } from '../utils/errors';
+
 import { getLoyaltyInfo } from '../services/loyalty.check';
-import { redeemPointsService  } from '../services/loyalty.redeem';
+import { redeemPointsService } from '../services/loyalty.redeem';
 import { completeOrderService } from '../services/loyalty.complete';
 
-export const checkBasket = (req: Request, res: Response) => {
+import { 
+    customerRepository, 
+    basketRepository, 
+    pointsLedgerRepository 
+} from '../repositories';
+
+export const checkBasket = async (req: Request, res: Response) => {
     try {
         const basketId = req.params.basketId as string;
-        const basket = getBasketDetails(basketId);
         
+        // Use repository to find basket
+        const basket = await basketRepository.findById(basketId);
         if (!basket) {
             return sendError(res, ErrorCodes.BASKET_NOT_FOUND);
         }
 
-        const customer = getCustomerDetails(basket);
+        // Use repository to find customer
+        const customer = await customerRepository.findById(basket.customerId);
         if (!customer) {
             return sendError(res, ErrorCodes.CUSTOMER_NOT_FOUND);
         }
@@ -29,17 +38,19 @@ export const checkBasket = (req: Request, res: Response) => {
     }
 };
 
-export const redeemPoints = (req: Request, res: Response) => {
+export const redeemPoints = async (req: Request, res: Response) => {
     try {
         const basketId = req.params.basketId as string;
         const { toRedeem } = req.body;
 
-        const basket = getBasketDetails(basketId);
+        // Find basket id
+        const basket = await basketRepository.findById(basketId);
         if (!basket) {
             return sendError(res, ErrorCodes.BASKET_NOT_FOUND);
         }
 
-        const customer = getCustomerDetails(basket);
+        // Find customer id
+        const customer = await customerRepository.findById(basket.customerId);
         if (!customer) {
             return sendError(res, ErrorCodes.CUSTOMER_NOT_FOUND);
         }
@@ -60,7 +71,15 @@ export const redeemPoints = (req: Request, res: Response) => {
             });
         }
 
-        const data = redeemPointsService(customer, basket, toRedeem);
+        const data = await redeemPointsService(
+            customer, 
+            basket, 
+            toRedeem,
+            customerRepository,
+            basketRepository,
+            pointsLedgerRepository
+        );
+        
         sendResponse(res, true, data, 'Points Redeemed Successfully');
 
     } catch(error) {
@@ -69,21 +88,30 @@ export const redeemPoints = (req: Request, res: Response) => {
     }
 };
 
-export const completeOrder = (req: Request, res: Response) => {
+export const completeOrder = async (req: Request, res: Response) => {
     try {
         const basketId = req.params.basketId as string;
         
-        const basket = getBasketDetails(basketId);
+        // Find basket id
+        const basket = await basketRepository.findById(basketId);
         if (!basket) {
             return sendError(res, ErrorCodes.BASKET_NOT_FOUND);
         }
 
-        const customer = getCustomerDetails(basket);
+        // Find customer id
+        const customer = await customerRepository.findById(basket.customerId);
         if (!customer) {
             return sendError(res, ErrorCodes.CUSTOMER_NOT_FOUND);
         }
 
-        const data = completeOrderService(customer, basket);
+        const data = await completeOrderService(
+            customer, 
+            basket,
+            customerRepository,
+            basketRepository,
+            pointsLedgerRepository
+        );
+        
         sendResponse(res, true, data, 'Order Completed');
 
     } catch(error) {

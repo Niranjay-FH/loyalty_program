@@ -1,66 +1,62 @@
 import { getTier } from '../utils/tier';
-import { writeData } from '../utils/data';
 
-import { customers } from '../data/customers';
-import { baskets } from '../data/baskets';
-import { counters } from '../data/counters';
-import { points_ledger } from '../data/points_ledger';
-
+import { 
+    ICustomerRepository, 
+    IBasketRepository, 
+    IPointsLedgerRepository } from '../repositories/interfaces';
+    
 import { Customer } from '../types/customer';
 import { BasketEntity } from '../types/basket';
 
-export function redeemPointsService(
+export async function redeemPointsService(
     customer: Customer,
     basket: BasketEntity,
-    toRedeem: number
+    toRedeem: number,
+    customerRepo: ICustomerRepository,
+    basketRepo: IBasketRepository,
+    ledgerRepo: IPointsLedgerRepository
 ) {
     const maxRedeemable = Math.min(toRedeem, basket.total!);
 
-    customer.points -= maxRedeemable;
-    customer.tier = getTier(customer.totalSpent);
+    // Update customer
+    const updatedCustomer = await customerRepo.update(customer.customerId, {
+        points: customer.points - maxRedeemable,
+        tier: getTier(customer.totalSpent)
+    });
 
-    customers[customers.findIndex(c => c.customerId === customer.customerId)] = customer;
-    writeData('customers', customers);
-
-    const basketIndex = baskets.findIndex(b => b.basketId === basket.basketId);
-
-    baskets[basketIndex] = {
-        ...baskets[basketIndex],
-        originalTotal: baskets[basketIndex].total,
-        updatedTotal: baskets[basketIndex].total - maxRedeemable,
+    // Update basket
+    await basketRepo.update(basket.basketId!, {
+        originalTotal: basket.total,
+        updatedTotal: basket.total! - maxRedeemable,
         pointsDiscount: maxRedeemable
-    };
-    writeData('baskets', baskets);
+    });
 
-    points_ledger.push({
-        ledgerId: `ledger_${counters.nextLedgerId++}`,
+    // Add ledger entry
+    await ledgerRepo.create({
         phone: customer.phone,
         type: 'redeem',
         points: -maxRedeemable,
         orderId: basket.basketId!,
         orderAmount: maxRedeemable,
-        tier: customer.tier,
+        tier: updatedCustomer.tier,
         reason: `Redeem ${maxRedeemable}pts (capped)`,
         timestamp: new Date().toISOString()
     });
 
-    writeData('counters', counters);
-    writeData('points_ledger', points_ledger);
-
     return {
         lookupChain: {
-        basketId: basket.basketId,
-        customerId: basket.customerId,
-        phone: customer.phone
-    },
-    basket: {
-        originalTotal: basket.total!,
-        updatedTotal: basket.total! - maxRedeemable,
-        pointsDiscount: maxRedeemable
-    },
-    loyalty: {
-        remainingPoints: customer.points,
-        pointsUsed: maxRedeemable
-    }
-  };
+            basketId: basket.basketId,
+            customerId: basket.customerId,
+            phone: customer.phone
+        },
+        basket: {
+            originalTotal: basket.total!,
+            updatedTotal: basket.total! - maxRedeemable,
+            pointsDiscount: maxRedeemable
+        },
+        loyalty: {
+            remainingPoints: updatedCustomer.points,
+            pointsUsed: maxRedeemable
+        }
+    };
 }

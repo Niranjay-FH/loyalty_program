@@ -1,5 +1,6 @@
 import { calculateMulipliers } from '../utils/discount';
 import { canRedeemPoints, getRedeemableOptions } from '../utils/discount';
+
 import { Customer } from '../types/customer';
 import { BasketResponse } from '../types/basket';
 
