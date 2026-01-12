@@ -1,48 +1,51 @@
-const customers = require('../data/customers');
-const baskets = require('../data/baskets');
-const { TIER, getTier } = require('./tier');
+import { customers } from '../data/customers';
+import { baskets } from '../data/baskets';
+import { TIER, getTier } from './tier';
 
-function isBirthday(customer) {
+import type { Customer } from '../types/customer';
+import type { Basket } from '../types/basket';
+
+export function isBirthday(customer: Customer): number {
     if (!customer.birthday) return 1.0;
- 
+
     const birthdayDate = new Date(customer.birthday);
     const today = new Date();
 
     const isBirthdayToday =
         birthdayDate.getMonth() === today.getMonth() &&
         birthdayDate.getDate() === today.getDate();
-   
+
     return isBirthdayToday ? 1.5 : 1.0;
 }
 
-function getCustomerDetails(basket){
-    const customerIndex = customers.findIndex(c => c.customerId === basket.customerId);
-    if (customerIndex === -1) {
-        return res.status(401).json({ error: 'Customer Not Found' });
-    } else {
-        return customers;
-    }
+export function getCustomerDetails(basket: Basket): Customer | undefined {
+    return customers.find(
+        (c: Customer) => c.customerId === basket.customerId
+    );
 }
 
-function getBasketDetails(basketId){
-    const basket = baskets.find(b => b.basketId === basketId);
-    console.log("Obtained Basket")
+export function getBasketDetails(
+    basketId: string
+): Basket | undefined {
+    console.log('Obtained Basket');
 
-    if (!basket) {
-        return res.status(401).json({ error: 'Invalid Basket ID' });
-    } else {
-        return { baskets, basket };
-    }
+    return baskets.find(
+        (b: Basket) => b.basketId === basketId
+    );
 }
 
-function calculateMulipliers(customer){
-    const totalSpent = customer.totalSpent || 0;
+export function calculateMulipliers(customer: Customer) {
+    const totalSpent = customer.totalSpent ?? 0;
     const tierName = getTier(totalSpent);
-    const tierMult = TIER[tierName]?.mult || 1.0;
+    const tierMult = TIER[tierName]?.mult ?? 1.0;
     const birthdayMult = isBirthday(customer);
     const totalMult = birthdayMult * tierMult;
 
-    return { totalSpent, tierName, tierMult, birthdayMult, totalMult }
+    return {
+        totalSpent,
+        tierName,
+        tierMult,
+        birthdayMult,
+        totalMult,
+    };
 }
-
-module.exports = { isBirthday, getCustomerDetails, getBasketDetails, calculateMulipliers }
