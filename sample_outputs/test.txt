@@ -1,3 +1,1 @@
-{ "action": "redeem", "toRedeem": 200  }
-
-{ "action": "complete" }
+{ "toRedeem": 200  }
