@@ -4,7 +4,6 @@ import { canRedeemPoints, getRedeemableOptions } from '../utils/discount';
 import { Customer } from '../types/customer';
 import { BasketResponse } from '../types/basket';
 import { Store } from '../types/restaurant';
-import { restaurants } from '../data/restaurants';
 
 export function getLoyaltyInfo(customer: Customer, basket: BasketResponse, store: Store) {
     const {
@@ -16,6 +15,9 @@ export function getLoyaltyInfo(customer: Customer, basket: BasketResponse, store
 
     const rewardRate = store.loyaltyPartner.rewardRate || 0;
     const estimatedPoints = Math.floor(basket.total! * rewardRate * totalMult);
+
+    // Get redemption validation
+    const redemptionValidation = canRedeemPoints(customer, basket, store);
 
     return {
         lookupChain: {
@@ -38,8 +40,14 @@ export function getLoyaltyInfo(customer: Customer, basket: BasketResponse, store
             tierMultiplier: tierMult,
             birthdayMultiplier: birthdayMult,
             totalMultiplier: totalMult,
-            canRedeem: canRedeemPoints(customer, basket),
-            redeemOptions: getRedeemableOptions(customer, store.loyaltyPartner.allowedDiscounts || [], basket.total!)
+            canRedeem: redemptionValidation.canRedeem,
+            redeemOptions: redemptionValidation.canRedeem 
+                ? getRedeemableOptions(
+                    customer, 
+                    store.loyaltyPartner.allowedDiscounts || [], 
+                    basket.total!
+                  )
+                : []  // Empty array if can't redeem
         }
     };
 }

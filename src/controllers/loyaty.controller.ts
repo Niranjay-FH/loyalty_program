@@ -1,9 +1,13 @@
 import { Request, Response } from 'express';
+
 import { sendResponse, sendError } from '../utils/response';
 import { ErrorCodes } from '../utils/errors';
+import { canRedeemPoints } from '../utils/discount';
+
 import { getLoyaltyInfo } from '../services/loyalty.check';
 import { redeemPointsService } from '../services/loyalty.redeem';
 import { completeOrderService } from '../services/loyalty.complete';
+
 import { 
     customerRepository, 
     basketRepository, 
@@ -34,7 +38,35 @@ export const checkBasket = async (req: Request, res: Response) => {
         }
 
         const data = getLoyaltyInfo(customer, basket, store);
-        sendResponse(res, true, data, 'Customer Can Redeem Points');
+        
+        // Check if customer can redeem
+        if (!data.loyalty.canRedeem) {
+            // Map the validation reason to appropriate error code
+            const validation = canRedeemPoints(customer, basket, store);
+            
+            let errorCode = ErrorCodes.CANNOT_REDEEM;
+            
+            if (validation.reason?.includes('not enrolled')) {
+                errorCode = ErrorCodes.CUSTOMER_NOT_ENROLLED;
+            } else if (validation.reason?.includes('expired')) {
+                errorCode = ErrorCodes.MEMBERSHIP_EXPIRED;
+            } else if (validation.reason?.includes('not active')) {
+                errorCode = ErrorCodes.MEMBERSHIP_INACTIVE;
+            } else if (validation.reason?.includes('orders required')) {
+                errorCode = ErrorCodes.MIN_ORDERS_NOT_MET;
+            } else if (validation.reason?.includes('Insufficient points')) {
+                errorCode = ErrorCodes.INSUFFICIENT_POINTS;
+            }
+            
+            return sendError(res, errorCode, {
+                customerId: customer.customerId,
+                storeId: store.storeId,
+                reason: validation.reason
+            });
+        }
+        
+        // Customer can redeem
+        sendResponse(res, true, data, 'Customer can redeem points');
 
     } catch(error) {
         console.error(error);
