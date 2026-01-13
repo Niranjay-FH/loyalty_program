@@ -1,17 +1,19 @@
 import { getTier } from '../utils/tier';
-
 import { 
     ICustomerRepository, 
     IBasketRepository, 
-    IPointsLedgerRepository } from '../repositories/interfaces';
-    
+    IPointsLedgerRepository 
+} from '../repositories/interfaces';
+
 import { Customer } from '../types/customer';
 import { BasketEntity } from '../types/basket';
+import { Store } from '../types/restaurant';
 
 export async function redeemPointsService(
     customer: Customer,
     basket: BasketEntity,
     toRedeem: number,
+    store: Store,
     customerRepo: ICustomerRepository,
     basketRepo: IBasketRepository,
     ledgerRepo: IPointsLedgerRepository
@@ -31,15 +33,19 @@ export async function redeemPointsService(
         pointsDiscount: maxRedeemable
     });
 
-    // Add ledger entry
+    // Ledger Entry - redeem
     await ledgerRepo.create({
+        customerId: customer.customerId,
         phone: customer.phone,
+        basketId: basket.basketId!,
+        storeId: basket.storeId,
         type: 'redeem',
         points: -maxRedeemable,
-        orderId: basket.basketId!,
         orderAmount: maxRedeemable,
         tier: updatedCustomer.tier,
-        reason: `Redeem ${maxRedeemable}pts (capped)`,
+        discountType: store.loyaltyPartner.discountType,
+        rewardRate: store.loyaltyPartner.rewardRate,
+        reason: `${maxRedeemable}pts = ₹${maxRedeemable} ${store.loyaltyPartner.discountType} discount`,
         timestamp: new Date().toISOString()
     });
 
@@ -47,7 +53,9 @@ export async function redeemPointsService(
         lookupChain: {
             basketId: basket.basketId,
             customerId: basket.customerId,
-            phone: customer.phone
+            phone: customer.phone,
+            restaurantId: basket.restaurantId,
+            storeId: basket.storeId
         },
         basket: {
             originalTotal: basket.total!,

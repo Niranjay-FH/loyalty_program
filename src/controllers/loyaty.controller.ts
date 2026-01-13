@@ -1,35 +1,39 @@
 import { Request, Response } from 'express';
-
 import { sendResponse, sendError } from '../utils/response';
 import { ErrorCodes } from '../utils/errors';
-
 import { getLoyaltyInfo } from '../services/loyalty.check';
 import { redeemPointsService } from '../services/loyalty.redeem';
 import { completeOrderService } from '../services/loyalty.complete';
-
 import { 
     customerRepository, 
     basketRepository, 
-    pointsLedgerRepository 
+    pointsLedgerRepository,
+    storeRepository
 } from '../repositories';
 
 export const checkBasket = async (req: Request, res: Response) => {
     try {
         const basketId = req.params.basketId as string;
         
-        // Use repository to find basket
         const basket = await basketRepository.findById(basketId);
         if (!basket) {
             return sendError(res, ErrorCodes.BASKET_NOT_FOUND);
         }
 
-        // Use repository to find customer
         const customer = await customerRepository.findById(basket.customerId);
         if (!customer) {
             return sendError(res, ErrorCodes.CUSTOMER_NOT_FOUND);
         }
 
-        const data = getLoyaltyInfo(customer, basket);
+        const store = await storeRepository.findById(basket.storeId);
+        if (!store?.loyaltyPartner?.enabled) {
+            return sendError(res, ErrorCodes.STORE_NO_LOYALTY, {
+                storeId: basket.storeId,
+                message: 'Store does not participate in loyalty program'
+            });
+        }
+
+        const data = getLoyaltyInfo(customer, basket, store);
         sendResponse(res, true, data, 'Customer Can Redeem Points');
 
     } catch(error) {
@@ -43,27 +47,30 @@ export const redeemPoints = async (req: Request, res: Response) => {
         const basketId = req.params.basketId as string;
         const { toRedeem } = req.body;
 
-        // Find basket id
         const basket = await basketRepository.findById(basketId);
         if (!basket) {
             return sendError(res, ErrorCodes.BASKET_NOT_FOUND);
         }
 
-        // Find customer id
         const customer = await customerRepository.findById(basket.customerId);
         if (!customer) {
             return sendError(res, ErrorCodes.CUSTOMER_NOT_FOUND);
         }
 
-        // Validate discount amount
-        if (![200, 400, 600].includes(toRedeem)) {
+        // ✅ NEW: Verify store + allowed discounts
+        const store = await storeRepository.findById(basket.storeId);
+        if (!store?.loyaltyPartner?.enabled) {
+            return sendError(res, ErrorCodes.STORE_NO_LOYALTY);
+        }
+
+        const allowedDiscounts = store.loyaltyPartner.allowedDiscounts || [];
+        if (!allowedDiscounts.includes(toRedeem)) {
             return sendError(res, ErrorCodes.INVALID_DISCOUNT_AMOUNT, {
-                allowed: [200, 400, 600],
+                allowed: allowedDiscounts,
                 requested: toRedeem
             });
         }
 
-        // Validate customer points
         if (customer.points < toRedeem) {
             return sendError(res, ErrorCodes.INSUFFICIENT_POINTS, {
                 available: customer.points,
@@ -75,6 +82,7 @@ export const redeemPoints = async (req: Request, res: Response) => {
             customer, 
             basket, 
             toRedeem,
+            store,  // ✅ PASS STORE
             customerRepository,
             basketRepository,
             pointsLedgerRepository
@@ -92,21 +100,29 @@ export const completeOrder = async (req: Request, res: Response) => {
     try {
         const basketId = req.params.basketId as string;
         
-        // Find basket id
         const basket = await basketRepository.findById(basketId);
         if (!basket) {
             return sendError(res, ErrorCodes.BASKET_NOT_FOUND);
         }
 
-        // Find customer id
         const customer = await customerRepository.findById(basket.customerId);
         if (!customer) {
             return sendError(res, ErrorCodes.CUSTOMER_NOT_FOUND);
         }
 
+        // ✅ NEW: Verify store for points earning
+        const store = await storeRepository.findById(basket.storeId);
+        if (!store?.loyaltyPartner?.enabled) {
+            // Still complete order, just no points
+            return sendResponse(res, true, { 
+                message: 'Order completed (no loyalty program at this store)' 
+            }, 'Order Completed');
+        }
+
         const data = await completeOrderService(
             customer, 
             basket,
+            store,  // ✅ PASS STORE
             customerRepository,
             basketRepository,
             pointsLedgerRepository

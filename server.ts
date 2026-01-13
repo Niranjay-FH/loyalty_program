@@ -1,8 +1,8 @@
-import express from "express";
 import dotenv from "dotenv";
-import loyaltyRoutes from "./src/routes/loyalty.routes";
-
 dotenv.config();
+
+import express from "express";
+import loyaltyRoutes from "./src/routes/loyalty.routes";
 
 const app = express();
 app.use(express.json());

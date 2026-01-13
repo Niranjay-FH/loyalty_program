@@ -7,11 +7,19 @@ import { baskets } from '../data/baskets';
 import fs from "fs";
 import path from "path";
 
-export const writeData = (filename: string, data: any): void => {
-  fs.writeFileSync(
-    path.join(__dirname, "..", "data", `${filename}.ts`),
-    `export const ${filename} = ${JSON.stringify(data, null, 2)};`
-  );
+export const writeData = (
+    filename: string,
+    data: unknown,
+    typeName: string
+): void => {
+    const typeAnnotation = typeName ? `: ${typeName}[]` : '';
+
+    fs.writeFileSync(
+        path.join(__dirname, "..", "data", `${filename}.ts`),
+        `import { ${typeName} } from '../types/misc';
+
+        export const ${filename}${typeAnnotation} = ${JSON.stringify(data, null, 2)};`
+    );
 };
 
 export function getCustomerDetails(basket: BasketResponse): Customer | undefined {

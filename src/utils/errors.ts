@@ -6,7 +6,11 @@ export const ErrorCodes = {
 
     // Basket Errors (2xxx)
     BASKET_NOT_FOUND: { code: 2001, message: 'Basket Not Found', status: 404 },
-    BASKET_CHECK_INVALID: { code: 2002, message: 'Check Invalid', status: 400 },
+    BASKET_CHECK_INVALID: { code: 2002, message: 'Basket check failed', status: 400 },
+
+    // Store Errors (25xx)
+    STORE_NOT_FOUND: { code: 2501, message: 'Store not found', status: 404 },
+    STORE_NO_LOYALTY: { code: 2502, message: 'Store does not participate in loyalty program', status: 400 },
 
     // Customer Errors (3xxx)
     CUSTOMER_NOT_FOUND: { code: 3001, message: 'Customer Not Found', status: 404 },

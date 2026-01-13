@@ -1,16 +1,18 @@
 import { calculateMulipliers } from '../utils/discount';
-
 import { 
     ICustomerRepository, 
     IBasketRepository, 
-    IPointsLedgerRepository } from '../repositories/interfaces';
+    IPointsLedgerRepository 
+} from '../repositories/interfaces';
 
 import { Customer } from '../types/customer';
 import { BasketEntity } from '../types/basket';
+import { Store } from '../types/restaurant';
 
 export async function completeOrderService(
     customer: Customer, 
     basket: BasketEntity,
+    store: Store,
     customerRepo: ICustomerRepository,
     basketRepo: IBasketRepository,
     ledgerRepo: IPointsLedgerRepository
@@ -23,13 +25,12 @@ export async function completeOrderService(
     } = calculateMulipliers(customer);
 
     const orderTotal = basket.updatedTotal ?? basket.total;
-
     if (orderTotal === undefined) {
         throw new Error(`Order total is missing for basket ${basket.basketId}`);
     }
 
-    const basePoints = Math.floor(orderTotal * 0.01);
-    const pointsEarned = Math.floor(basePoints * totalMult);
+    const rewardRate = store.loyaltyPartner.rewardRate || 0;
+    const pointsEarned = Math.floor(orderTotal * rewardRate * totalMult);
 
     // Update customer
     await customerRepo.update(customer.customerId, {
@@ -39,30 +40,29 @@ export async function completeOrderService(
         tier: tierName
     });
 
-    // Update basket
-    await basketRepo.update(basket.basketId!, {
-        updatedTotal: basket.updatedTotal,
-        pointsDiscount: basket.pointsDiscount
-    });
-
-    // Add ledger entry
+    // Ledger entry - earn
     await ledgerRepo.create({
+        customerId: customer.customerId,
         phone: customer.phone,
+        basketId: basket.basketId!,
+        storeId: basket.storeId,
         type: 'earn',
         points: pointsEarned,
-        orderId: basket.basketId!,
         orderAmount: orderTotal,
         tier: tierName,
-        multiplier: totalMult.toFixed(1),
-        reason: `Earn on ${orderTotal}`,
+        multiplier: totalMult,
+        rewardRate,
+        reason: `Earn: ${orderTotal} X ${rewardRate} X ${totalMult.toFixed(1)}`,
         timestamp: new Date().toISOString()
     });
 
     return {
         lookupChain: {
             basketId: basket.basketId,
-            customerId: basket.customerId,
-            phone: customer.phone
+            customerId: customer.customerId,
+            phone: customer.phone,
+            restaurantId: basket.restaurantId,
+            storeId: basket.storeId
         },
         basket: {
             total: orderTotal,

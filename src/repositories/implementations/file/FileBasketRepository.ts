@@ -16,13 +16,13 @@ export class FileBasketRepository implements IBasketRepository {
         }
         
         baskets[index] = { ...baskets[index], ...data };
-        writeData('baskets', baskets);
+        writeData('baskets', baskets, "BasketEntity");
         return baskets[index];
     }
 
     async create(basket: BasketEntity): Promise<BasketEntity> {
         baskets.push(basket);
-        writeData('baskets', baskets);
+        writeData('baskets', baskets, "BasketEntity");
         return basket;
     }
 }

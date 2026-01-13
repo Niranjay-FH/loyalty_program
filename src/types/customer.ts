@@ -8,4 +8,15 @@ export interface Customer {
   birthday: string;
   tier: string;
   status: string;
+  
+  loyaltyInfo: {
+    storeId: string;
+    partnerId?: string;
+    noOrders: number;
+    membership: {
+      status: string;
+      joinedDate: string;
+      expiryDate: string;
+    };
+  }[];
 }

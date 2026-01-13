@@ -21,13 +21,13 @@ export class FileCustomerRepository implements ICustomerRepository {
         }
         
         customers[index] = { ...customers[index], ...data };
-        writeData('customers', customers);
+        writeData('customers', customers, "Customer");
         return customers[index];
     }
 
     async create(customer: Customer): Promise<Customer> {
         customers.push(customer);
-        writeData('customers', customers);
+        writeData('customers', customers, "Customer");
         return customer;
     }
 }

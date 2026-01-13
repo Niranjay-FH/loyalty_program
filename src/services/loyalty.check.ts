@@ -3,8 +3,10 @@ import { canRedeemPoints, getRedeemableOptions } from '../utils/discount';
 
 import { Customer } from '../types/customer';
 import { BasketResponse } from '../types/basket';
+import { Store } from '../types/restaurant';
+import { restaurants } from '../data/restaurants';
 
-export function getLoyaltyInfo(customer: Customer, basket: BasketResponse) {
+export function getLoyaltyInfo(customer: Customer, basket: BasketResponse, store: Store) {
     const {
         tierName,
         tierMult,
@@ -12,28 +14,32 @@ export function getLoyaltyInfo(customer: Customer, basket: BasketResponse) {
         totalMult
     } = calculateMulipliers(customer);
 
-    const estimatedPoints = Math.floor(basket.total! * 0.01 * totalMult);
+    const rewardRate = store.loyaltyPartner.rewardRate || 0;
+    const estimatedPoints = Math.floor(basket.total! * rewardRate * totalMult);
 
     return {
         lookupChain: {
-        basketId: basket.basketId,
-        customerId: basket.customerId,
-        phone: customer.phone
-    },
-    basket: {
-        total: basket.total!,
-        estimatedPoints
-    },
-    loyalty: {
-        phone: customer.phone,
-        name: customer.name,
-        remainingPoints: customer.points,
-        tier: tierName,
-        tierMultiplier: tierMult,
-        birthdayMultiplier: birthdayMult,
-        totalMultiplier: totalMult,
-        canRedeem: canRedeemPoints(customer, basket),
-        redeemOptions: getRedeemableOptions(customer, [200, 400, 600], basket.total!)
-    }
-  };
+            basketId: basket.basketId,
+            customerId: basket.customerId,
+            phone: customer.phone,
+            restaurantId: basket.restaurantId,
+            storeId: store.storeId
+        },
+        basket: {
+            total: basket.total!,
+            estimatedPoints,
+            rewardRate
+        },
+        loyalty: {
+            phone: customer.phone,
+            name: customer.name,
+            remainingPoints: customer.points,
+            tier: tierName,
+            tierMultiplier: tierMult,
+            birthdayMultiplier: birthdayMult,
+            totalMultiplier: totalMult,
+            canRedeem: canRedeemPoints(customer, basket),
+            redeemOptions: getRedeemableOptions(customer, store.loyaltyPartner.allowedDiscounts || [], basket.total!)
+        }
+    };
 }

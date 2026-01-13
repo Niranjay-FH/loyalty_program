@@ -1,4 +1,6 @@
-export const baskets = [
+import { BasketEntity } from '../types/basket';
+
+export const baskets: BasketEntity[] = [
   {
     "basketId": "basket_001",
     "customerId": 1,

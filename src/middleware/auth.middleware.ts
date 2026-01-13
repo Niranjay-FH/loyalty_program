@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { partners } from '../data/partners';
+import { provider } from '../data/provider';
 import { ErrorCodes } from '../utils/errors';
 import { sendError } from '../utils/response';
 
@@ -10,7 +10,7 @@ export function verifyFoodhub(req: Request, res: Response, next: NextFunction) {
         return sendError(res, ErrorCodes.MISSING_API_KEY);
     }
  
-    const partner = partners.find(p => p.apiKey === apiKey && p.status === 'active');
+    const partner = provider.find(p => p.apiKey === apiKey && p.status === 'active');
  
     if (!partner || partner.partnerId !== 'foodhub') {
         return sendError(res, ErrorCodes.INVALID_API_KEY);
