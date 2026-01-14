@@ -1,0 +1,23 @@
+{
+    "success": true,
+    "data": {
+        "lookupChain": {
+            "basketId": "basket_001",
+            "customerId": 1,
+            "phone": "+919876543210",
+            "restaurantId": "rest_001",
+            "storeId": "store_001"
+        },
+        "basket": {
+            "originalTotal": 800,
+            "updatedTotal": 600,
+            "pointsDiscount": 200
+        },
+        "loyalty": {
+            "remainingPoints": 250,
+            "pointsUsed": 200
+        }
+    },
+    "message": "Points Redeemed Successfully",
+    "errors": null
+}

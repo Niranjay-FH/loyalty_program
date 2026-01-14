@@ -1,0 +1,39 @@
+{
+    "success": true,
+    "data": {
+        "lookupChain": {
+            "basketId": "basket_001",
+            "customerId": 1,
+            "phone": "+919876543210",
+            "restaurantId": "rest_001",
+            "storeId": "store_001"
+        },
+        "basket": {
+            "total": 800,
+            "estimatedPoints": 60,
+            "rewardRate": 0.05
+        },
+        "loyalty": {
+            "phone": "+919876543210",
+            "name": "Rahul Sharma",
+            "remainingPoints": 450,
+            "tier": "silver",
+            "tierMultiplier": 1.5,
+            "birthdayMultiplier": 1,
+            "totalMultiplier": 1.5,
+            "canRedeem": true,
+            "redeemOptions": [
+                {
+                    "points": 200,
+                    "discount": "200 OFF"
+                },
+                {
+                    "points": 400,
+                    "discount": "400 OFF"
+                }
+            ]
+        }
+    },
+    "message": "Customer can redeem points",
+    "errors": null
+}
