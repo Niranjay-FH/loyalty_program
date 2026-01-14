@@ -4,11 +4,14 @@
         "lookupChain": {
             "basketId": "basket_001",
             "customerId": 1,
-            "phone": "+919876543210"
+            "phone": "+919876543210",
+            "restaurantId": "rest_001",
+            "storeId": "store_001"
         },
         "basket": {
             "total": 800,
-            "estimatedPoints": 12
+            "estimatedPoints": 60,
+            "rewardRate": 0.05
         },
         "loyalty": {
             "phone": "+919876543210",
@@ -31,6 +34,6 @@
             ]
         }
     },
-    "message": "Customer Can Redeem Points",
+    "message": "Customer can redeem points",
     "errors": null
 }

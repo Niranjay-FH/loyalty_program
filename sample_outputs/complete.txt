@@ -4,7 +4,9 @@
         "lookupChain": {
             "basketId": "basket_001",
             "customerId": 1,
-            "phone": "+919876543210"
+            "phone": "+919876543210",
+            "restaurantId": "rest_001",
+            "storeId": "store_001"
         },
         "basket": {
             "total": 600,
@@ -14,12 +16,12 @@
         "loyalty": {
             "phone": "+919876543210",
             "name": "Rahul Sharma",
-            "remainingPoints": 259,
+            "remainingPoints": 295,
             "tier": "silver",
             "tierMultiplier": "1.5",
             "birthdayMultiplier": "1.0",
             "totalMultiplier": "1.5",
-            "pointsEarned": 9
+            "pointsEarned": 45
         }
     },
     "message": "Order Completed",
