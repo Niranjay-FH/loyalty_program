@@ -7,14 +7,14 @@ import {
     redeemPointsRequestSchema,
     completeOrderRequestSchema
 } from '../validation/schemas';
-import { verifyFoodhub } from '../middleware/auth.middleware';
+import { verifyProvider } from '../middleware/auth.middleware';
 
 const router = Router();
 
 // Check loyalty information for a basket
 router.get(
     '/basket/:basketId/check',
-    verifyFoodhub,
+    verifyProvider(),
     validate(checkBasketRequestSchema),
     checkBasket
 );
@@ -22,7 +22,7 @@ router.get(
 // Redeem loyalty points for a basket
 router.post(
     '/basket/:basketId/redeem',
-    verifyFoodhub,
+    verifyProvider(),
     validate(redeemPointsRequestSchema),
     redeemPoints
 );
@@ -30,7 +30,7 @@ router.post(
 // Complete an order and award loyalty points
 router.post(
     '/basket/:basketId/complete',
-    verifyFoodhub,
+    verifyProvider(),
     validate(completeOrderRequestSchema),
     completeOrder
 );

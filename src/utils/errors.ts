@@ -1,7 +1,7 @@
 export const ErrorCodes = {
     // Authentication Errors (1xxx)
-    MISSING_API_KEY: { code: 1001, message: 'Missing API key', status: 401 },
-    INVALID_API_KEY: { code: 1002, message: 'Invalid Foodhub API key', status: 401 },
+    MISSING_API_KEY: { code: 1001, message: 'Missing Provider API key', status: 401 },
+    INVALID_API_KEY: { code: 1002, message: 'Invalid Provider API key', status: 401 },
     UNAUTHORIZED: { code: 1003, message: 'Unauthorized access', status: 401 },
     
     // Validation Errors (15xx)
