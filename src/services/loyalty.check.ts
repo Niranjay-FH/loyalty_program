@@ -16,17 +16,22 @@ export function getLoyaltyInfo(customer: Customer, basket: BasketResponse, store
     const rewardRate = store.loyaltyPartner.rewardRate || 0;
     const estimatedPoints = Math.floor(basket.total! * rewardRate * totalMult);
 
-    // Get redemption validation
     const redemptionValidation = canRedeemPoints(customer, basket, store);
 
+    // Extract partnerId
+    const partnerId = store.loyaltyPartner?.partnerId;
+
+    const lookupChain = {
+        basketId: basket.basketId,
+        customerId: basket.customerId,
+        phone: customer.phone,
+        restaurantId: basket.restaurantId,
+        storeId: store.storeId,
+        ...(partnerId && { partnerId })
+    };
+
     return {
-        lookupChain: {
-            basketId: basket.basketId,
-            customerId: basket.customerId,
-            phone: customer.phone,
-            restaurantId: basket.restaurantId,
-            storeId: store.storeId
-        },
+        lookupChain,
         basket: {
             total: basket.total!,
             estimatedPoints,
@@ -47,7 +52,7 @@ export function getLoyaltyInfo(customer: Customer, basket: BasketResponse, store
                     store.loyaltyPartner.allowedDiscounts || [], 
                     basket.total!
                   )
-                : []  // Empty array if can't redeem
+                : []
         }
     };
 }

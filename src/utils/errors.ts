@@ -4,6 +4,9 @@ export const ErrorCodes = {
     INVALID_API_KEY: { code: 1002, message: 'Invalid Foodhub API key', status: 401 },
     UNAUTHORIZED: { code: 1003, message: 'Unauthorized access', status: 401 },
     
+    // Validation Errors (15xx)
+    VALIDATION_ERROR: { code: 1501, message: 'Request validation failed', status: 400 },
+    
     // Basket Errors (2xxx)
     BASKET_NOT_FOUND: { code: 2001, message: 'Basket Not Found', status: 404 },
     BASKET_CHECK_INVALID: { code: 2002, message: 'Basket check failed', status: 400 },

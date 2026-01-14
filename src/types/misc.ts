@@ -21,6 +21,7 @@ export interface LookupChain {
     phone: string;
     restaurantId: string,
     storeId: string;
+    partnerId?: string;
 }
 
 export interface TierConfig {

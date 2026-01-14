@@ -20,20 +20,17 @@ export async function redeemPointsService(
 ) {
     const maxRedeemable = Math.min(toRedeem, basket.total!);
 
-    // Update customer
     const updatedCustomer = await customerRepo.update(customer.customerId, {
         points: customer.points - maxRedeemable,
         tier: getTier(customer.totalSpent)
     });
 
-    // Update basket
     await basketRepo.update(basket.basketId!, {
         originalTotal: basket.total,
         updatedTotal: basket.total! - maxRedeemable,
         pointsDiscount: maxRedeemable
     });
 
-    // Ledger Entry - redeem
     await ledgerRepo.create({
         customerId: customer.customerId,
         phone: customer.phone,
@@ -49,14 +46,20 @@ export async function redeemPointsService(
         timestamp: new Date().toISOString()
     });
 
+    // Extract partnerId
+    const partnerId = store.loyaltyPartner?.partnerId;
+
+    const lookupChain = {
+        basketId: basket.basketId,
+        customerId: basket.customerId,
+        phone: customer.phone,
+        restaurantId: basket.restaurantId,
+        storeId: basket.storeId,
+        ...(partnerId && { partnerId })
+    };
+
     return {
-        lookupChain: {
-            basketId: basket.basketId,
-            customerId: basket.customerId,
-            phone: customer.phone,
-            restaurantId: basket.restaurantId,
-            storeId: basket.storeId
-        },
+        lookupChain,
         basket: {
             originalTotal: basket.total!,
             updatedTotal: basket.total! - maxRedeemable,

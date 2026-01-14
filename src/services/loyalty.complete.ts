@@ -32,7 +32,6 @@ export async function completeOrderService(
     const rewardRate = store.loyaltyPartner.rewardRate || 0;
     const pointsEarned = Math.floor(orderTotal * rewardRate * totalMult);
 
-    // Update customer
     await customerRepo.update(customer.customerId, {
         points: customer.points + pointsEarned,
         totalSpent: customer.totalSpent + orderTotal,
@@ -40,7 +39,6 @@ export async function completeOrderService(
         tier: tierName
     });
 
-    // Ledger entry - earn
     await ledgerRepo.create({
         customerId: customer.customerId,
         phone: customer.phone,
@@ -56,14 +54,20 @@ export async function completeOrderService(
         timestamp: new Date().toISOString()
     });
 
+    // Extract partnerId
+    const partnerId = store.loyaltyPartner?.partnerId;
+
+    const lookupChain = {
+        basketId: basket.basketId,
+        customerId: customer.customerId,
+        phone: customer.phone,
+        restaurantId: basket.restaurantId,
+        storeId: basket.storeId,
+        ...(partnerId && { partnerId })
+    };
+
     return {
-        lookupChain: {
-            basketId: basket.basketId,
-            customerId: customer.customerId,
-            phone: customer.phone,
-            restaurantId: basket.restaurantId,
-            storeId: basket.storeId
-        },
+        lookupChain,
         basket: {
             total: orderTotal,
             ...(basket.updatedTotal !== undefined && { updatedTotal: basket.updatedTotal }),
