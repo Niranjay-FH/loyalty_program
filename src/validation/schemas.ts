@@ -66,28 +66,34 @@ export const basketIdSchema = z.object({
     basketId: z.string().min(1, 'Basket ID is required')
 });
 
-// BasketEntity validation (full basket from database)
+// Basket item schema
+export const basketItemSchema = z.object({
+    id: z.number().optional(),
+    basketId: z.string(),
+    name: z.string().min(1),
+    price: z.number().nonnegative(),
+    quantity: z.number().int().positive()
+});
+
+// BasketEntity validation
 export const basketEntitySchema = z.object({
-  	basketId: z.string(),
-  	customerId: z.number(),
-  	restaurantId: z.string(),
-  	storeId: z.string(),	
-  	items: z.array(z.object({
-    	name: z.string(),
-    	price: z.number()
-  	})),
-  	subtotal: z.number().nonnegative(),
-  	deliveryFee: z.number().nonnegative(),
-  	total: z.number().nonnegative(),
-  	timestamp: z.string(),
-  	originalTotal: z.number().nonnegative(),
-  	updatedTotal: z.number().nonnegative(),
-  	pointsDiscount: z.number().nonnegative(),
-  	loyalty: z.object({
-    	tierUsed: z.string(),
-    	pointsRedeemed: z.number(),
-    	discountAmount: z.number()
-  	}).optional()
+    basketId: z.string(),
+    customerId: z.number(),
+    restaurantId: z.string(),
+    storeId: z.string(),
+    items: z.array(basketItemSchema),
+    subtotal: z.number().nonnegative(),
+    deliveryFee: z.number().nonnegative(),
+    total: z.number().nonnegative(),
+    timestamp: z.string(),
+    originalTotal: z.number().nonnegative(),
+    updatedTotal: z.number().nonnegative(),
+    pointsDiscount: z.number().nonnegative(),
+    loyalty: z.object({
+        tierUsed: z.string(),
+        pointsRedeemed: z.number(),
+        discountAmount: z.number()
+    }).optional()
 });
 
 // BasketResponse validation (partial basket for responses)
