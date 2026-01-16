@@ -1,15 +1,15 @@
-import { calculateMulipliers } from '../utils/discount';
-import { getTier } from '../utils/tier';
+import { calculateMulipliers } from '../../utils/discount';
+import { getTier } from '../../utils/tier';
 
 import { 
     ICustomerRepository, 
     IBasketRepository, 
     IPointsLedgerRepository 
-} from '../repositories/interfaces';
+} from '../../repositories/interfaces';
 
-import { Customer } from '../types/customer';
-import { BasketEntity } from '../types/basket';
-import { Store } from '../types/restaurant';
+import { Customer } from '../../types/customer';
+import { BasketEntity } from '../../types/basket';
+import { Store } from '../../types/restaurant';
 
 export async function completeOrderService(
     customer: Customer, 

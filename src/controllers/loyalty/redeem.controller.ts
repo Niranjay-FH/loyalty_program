@@ -1,22 +1,22 @@
 import { Request, Response } from 'express';
 
-import { sendResponse, sendError } from '../utils/response';
-import { ErrorCodes } from '../utils/errors';
+import { sendResponse, sendError } from '../../utils/response';
+import { ErrorCodes } from '../../utils/errors';
 
-import { redeemPointsService } from '../services/loyalty.redeem';
+import { redeemPointsService } from '../../services/loyalty/loyalty.redeem';
 
 import { 
     customerRepository, 
     basketRepository, 
     pointsLedgerRepository,
     storeRepository
-} from '../repositories';
+} from '../../repositories';
 
 import { 
     customerSchema, 
     storeSchema,
     loyaltyRedeemResponseSchema
-} from '../validation/schemas';
+} from '../../validation/schemas';
 
 export const redeemPoints = async (req: Request, res: Response) => {
     try {

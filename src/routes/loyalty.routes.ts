@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { checkBasket, redeemPoints, completeOrder } from '../controllers';
+import { checkBasket, redeemPoints, completeOrder } from '../controllers/loyalty';
 
 import { validate } from '../middleware/validation.middleware';
 import { 

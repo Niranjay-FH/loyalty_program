@@ -1,22 +1,22 @@
 import { Request, Response } from 'express';
 
-import { sendResponse, sendError } from '../utils/response';
-import { ErrorCodes } from '../utils/errors';
-import { canRedeemPoints } from '../utils/discount';
+import { sendResponse, sendError } from '../../utils/response';
+import { ErrorCodes } from '../../utils/errors';
+import { canRedeemPoints } from '../../utils/discount';
 
-import { getLoyaltyInfo } from '../services/loyalty.check';
+import { getLoyaltyInfo } from '../../services/loyalty/loyalty.check';
 
 import { 
     customerRepository, 
     basketRepository, 
     storeRepository
-} from '../repositories';
+} from '../../repositories';
 
 import { 
     customerSchema, 
     storeSchema,
     loyaltyCheckResponseSchema
-} from '../validation/schemas';
+} from '../../validation/schemas';
 
 export const checkBasket = async (req: Request, res: Response) => {
     try {

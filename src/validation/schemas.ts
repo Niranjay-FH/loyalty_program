@@ -62,12 +62,16 @@ export const customerSchema = z.object({
   	}))
 });
 
+export const basketIdSchema = z.object({
+    basketId: z.string().min(1, 'Basket ID is required')
+});
+
 // BasketEntity validation (full basket from database)
 export const basketEntitySchema = z.object({
   	basketId: z.string(),
   	customerId: z.number(),
   	restaurantId: z.string(),
-  	storeId: z.string(),
+  	storeId: z.string(),	
   	items: z.array(z.object({
     	name: z.string(),
     	price: z.number()
