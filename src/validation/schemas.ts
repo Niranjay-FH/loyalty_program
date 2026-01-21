@@ -52,7 +52,7 @@ export const customerSchema = z.object({
   	status: z.string(),
   	loyaltyInfo: z.array(z.object({
   	  	storeId: z.string(),
-      	partnerId: z.string().optional(),
+      	partnerId: z.string().nullable().optional(),
       	noOrders: z.number().nonnegative().int(),
       	membership: z.object({
         	status: z.string(),
