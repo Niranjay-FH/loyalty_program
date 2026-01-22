@@ -11,8 +11,8 @@
     "ignoreDeprecations": "6.0",
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "types": ["node"],
+    "types": ["jest", "node"],
   },
-  "include": ["src/**/*", "server.ts"],
+  "include": ["src/**/*", "server.ts", "src/__tests__/setup.ts"],
   "exclude": ["node_modules"]
 }
