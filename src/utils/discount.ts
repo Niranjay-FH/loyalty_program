@@ -29,12 +29,13 @@ export function canRedeemPoints(
 	customer: Customer,
 	basket: BasketResponse,
 	store: Store
-): { canRedeem: boolean; errorCode?: ErrorCode; details?: Record<string, any> } {
+): { canRedeem: boolean; reason?: string; errorCode?: ErrorCode; details?: Record<string, any> } {
 	// Check if store has loyalty partner enabled
 	if (!store.loyaltyPartner.enabled) {
 		return {
 			canRedeem: false,
 			errorCode: ErrorCodes.STORE_NO_LOYALTY,
+			reason: 'Store does not participate in loyalty program'
 		};
 	}
 	
@@ -44,6 +45,7 @@ export function canRedeemPoints(
 		return {
 			canRedeem: false,
 			errorCode: ErrorCodes.STORE_NO_PARTNER,
+			reason: 'Store has no loyalty partner configured'
 		};
 	}
 	
@@ -55,6 +57,7 @@ export function canRedeemPoints(
 		return {
 			canRedeem: false,
 			errorCode: ErrorCodes.CUSTOMER_NOT_ENROLLED,
+			reason: 'Customer not enrolled in this loyalty program'
 		};
 	}
 	
@@ -63,6 +66,7 @@ export function canRedeemPoints(
 		return {
 			canRedeem: false,
 			errorCode: ErrorCodes.MEMBERSHIP_INACTIVE,
+			reason: 'Loyalty membership is not active'
 		};
 	}
 	
@@ -73,7 +77,8 @@ export function canRedeemPoints(
 		return {
 			canRedeem: false,
 			errorCode: ErrorCodes.MEMBERSHIP_EXPIRED,
-			details: { expiryDate: expiryDate.toLocaleDateString() },
+			reason: `Loyalty membership expired on ${expiryDate.toLocaleDateString('en-US')}`,
+			details: { expiryDate: expiryDate.toLocaleDateString('en-US') }
 		};
 	}
 	
@@ -83,10 +88,11 @@ export function canRedeemPoints(
 		return {
 			canRedeem: false,
 			errorCode: ErrorCodes.MIN_ORDERS_NOT_MET,
+			reason: `Minimum ${minOrders} orders required. You have ${loyaltyInfo.noOrders} orders`,
 			details: { 
 				minOrders, 
 				currentOrders: loyaltyInfo.noOrders 
-			},
+			}
 		};
 	}
 	
@@ -101,6 +107,7 @@ export function canRedeemPoints(
 			return {
 				canRedeem: false,
 				errorCode: ErrorCodes.NO_DISCOUNTS_AVAILABLE,
+				reason: 'No discount options available at this store'
 			};
 		}
 		const minDiscount = Math.min(...allowedDiscounts);
@@ -108,20 +115,22 @@ export function canRedeemPoints(
 			return {
 				canRedeem: false,
 				errorCode: ErrorCodes.INSUFFICIENT_POINTS,
+				reason: `Insufficient points. Minimum ${minDiscount} points required`,
 				details: { 
 					required: minDiscount,
 					available: customer.points 
-				},
+				}
 			};
 		}
 		if (basket.total! < minDiscount) {
 			return {
 				canRedeem: false,
 				errorCode: ErrorCodes.BASKET_TOTAL_TOO_LOW,
+				reason: `Basket total too low for redemption. Minimum ${minDiscount} required`,
 				details: { 
 					minRequired: minDiscount,
 					basketTotal: basket.total 
-				},
+				}
 			};
 		}
 	}
