@@ -40,7 +40,7 @@ export const checkBasket = async (req: Request, res: Response) => {
         }
 
         const validatedStore = storeSchema.parse(store);
-
+        
         const partnerId = validatedStore.loyaltyPartner?.partnerId;
         if (!partnerId) {
             return sendError(res, ErrorCodes.STORE_NO_LOYALTY, {
@@ -48,20 +48,18 @@ export const checkBasket = async (req: Request, res: Response) => {
                 message: 'Store has no associated loyalty partner'
             });
         }
-
-        const customer = await customerRepository.findById(basket.customerId);
         
+        const customer = await customerRepository.findById(basket.customerId); 
         if (!customer) {
             return sendError(res, ErrorCodes.CUSTOMER_NOT_FOUND);
         }
 
         const validatedCustomer = customerSchema.parse(customer);
-
+        
         // Check if customer is enrolled with this partner
         const loyaltyInfo = validatedCustomer.loyaltyInfo.find(
             info => info.partnerId === partnerId
         );
-
         if (!loyaltyInfo) {
             return sendError(res, ErrorCodes.CUSTOMER_NOT_ENROLLED, {
                 customerId: validatedCustomer.customerId,
@@ -70,21 +68,20 @@ export const checkBasket = async (req: Request, res: Response) => {
                 reason: 'Customer not enrolled in this loyalty program'
             });
         }
-
+        
         const data = getLoyaltyInfo(validatedCustomer, basket, validatedStore);
         
         if (!data.loyalty.canRedeem) {
             const validation = canRedeemPoints(validatedCustomer, basket, validatedStore);
-            const errorCode = validation.errorCode;
                         
             return sendError(
                 res, 
-                errorCode ?? ErrorCodes.CANNOT_REDEEM,
+                validation.errorCode ?? ErrorCodes.CANNOT_REDEEM,
                 {
                     customerId: validatedCustomer.customerId,
                     storeId: validatedStore.storeId,
                     partnerId: partnerId,
-                    reason: errorCode?.message
+                    reason: validation.reason
                 }
             );
         }
@@ -92,7 +89,6 @@ export const checkBasket = async (req: Request, res: Response) => {
         const validatedResponse = loyaltyCheckResponseSchema.parse(data);
         
         sendResponse(res, true, validatedResponse, 'Customer can redeem points');
-
     } catch(error) {
         console.error('checkBasket error:', error);
         return sendError(res, ErrorCodes.BASKET_CHECK_INVALID);
