@@ -1,22 +1,22 @@
 import { Request, Response } from 'express';
 
-import { sendResponse, sendError } from '../utils/response';
-import { ErrorCodes } from '../utils/errors';
-import { canRedeemPoints } from '../utils/discount';
+import { sendResponse, sendError } from '../../utils/response';
+import { ErrorCodes } from '../../utils/errors';
+import { canRedeemPoints } from '../../utils/discount';
 
-import { getLoyaltyInfo } from '../services/loyalty.check';
+import { getLoyaltyInfo } from '../../services/loyalty/loyalty.check';
 
 import { 
     customerRepository, 
     basketRepository, 
     storeRepository
-} from '../repositories';
+} from '../../repositories';
 
 import { 
     customerSchema, 
     storeSchema,
     loyaltyCheckResponseSchema
-} from '../validation/schemas';
+} from '../../validation/schemas';
 
 export const checkBasket = async (req: Request, res: Response) => {
     try {
@@ -75,27 +75,18 @@ export const checkBasket = async (req: Request, res: Response) => {
         
         if (!data.loyalty.canRedeem) {
             const validation = canRedeemPoints(validatedCustomer, basket, validatedStore);
-            
-            let errorCode = ErrorCodes.CANNOT_REDEEM;
-            
-            if (validation.reason?.includes('not enrolled')) {
-                errorCode = ErrorCodes.CUSTOMER_NOT_ENROLLED;
-            } else if (validation.reason?.includes('expired')) {
-                errorCode = ErrorCodes.MEMBERSHIP_EXPIRED;
-            } else if (validation.reason?.includes('not active')) {
-                errorCode = ErrorCodes.MEMBERSHIP_INACTIVE;
-            } else if (validation.reason?.includes('orders required')) {
-                errorCode = ErrorCodes.MIN_ORDERS_NOT_MET;
-            } else if (validation.reason?.includes('Insufficient points')) {
-                errorCode = ErrorCodes.INSUFFICIENT_POINTS;
-            }
-            
-            return sendError(res, errorCode, {
-                customerId: validatedCustomer.customerId,
-                storeId: validatedStore.storeId,
-                partnerId: partnerId,
-                reason: validation.reason
-            });
+            const errorCode = validation.errorCode;
+                        
+            return sendError(
+                res, 
+                errorCode ?? ErrorCodes.CANNOT_REDEEM,
+                {
+                    customerId: validatedCustomer.customerId,
+                    storeId: validatedStore.storeId,
+                    partnerId: partnerId,
+                    reason: errorCode?.message
+                }
+            );
         }
         
         const validatedResponse = loyaltyCheckResponseSchema.parse(data);

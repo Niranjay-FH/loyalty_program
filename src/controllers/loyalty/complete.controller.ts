@@ -1,22 +1,22 @@
 import { Request, Response } from 'express';
 
-import { sendResponse, sendError } from '../utils/response';
-import { ErrorCodes } from '../utils/errors';
+import { sendResponse, sendError } from '../../utils/response';
+import { ErrorCodes } from '../../utils/errors';
 
-import { completeOrderService } from '../services/loyalty.complete';
+import { completeOrderService } from '../../services/loyalty/loyalty.complete';
 
 import { 
     customerRepository, 
     basketRepository, 
     pointsLedgerRepository,
     storeRepository
-} from '../repositories';
+} from '../../repositories';
 
 import { 
     customerSchema, 
     storeSchema,
     loyaltyCompleteResponseSchema
-} from '../validation/schemas';
+} from '../../validation/schemas';
 
 export const completeOrder = async (req: Request, res: Response) => {
     try {

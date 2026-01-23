@@ -11,7 +11,7 @@ export interface Customer {
   
   loyaltyInfo: {
     storeId: string;
-    partnerId?: string;
+    partnerId?: string | null;
     noOrders: number;
     membership: {
       status: string;

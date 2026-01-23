@@ -14,6 +14,7 @@ export const ErrorCodes = {
     // Store Errors (25xx)
     STORE_NOT_FOUND: { code: 2501, message: 'Store not found', status: 404 },
     STORE_NO_LOYALTY: { code: 2502, message: 'Store does not participate in loyalty program', status: 400 },
+    STORE_NO_PARTNER: { code: 2503, message: 'Store has no loyalty partner configured', status: 400 },
     
     // Customer Errors (3xxx)
     CUSTOMER_NOT_FOUND: { code: 3001, message: 'Customer Not Found', status: 404 },
@@ -27,10 +28,12 @@ export const ErrorCodes = {
     INVALID_DISCOUNT_AMOUNT: { code: 4001, message: 'Invalid discount amount', status: 400 },
     REDEMPTION_FAILED: { code: 4002, message: 'Redemption failed', status: 400 },
     CANNOT_REDEEM: { code: 4003, message: 'Cannot redeem points', status: 400 },
+    NO_DISCOUNTS_AVAILABLE: { code: 4004, message: 'No discount options available at this store', status: 400 },
+    BASKET_TOTAL_TOO_LOW: { code: 4005, message: 'Basket total too low for redemption', status: 400 },
     
     // Server Errors (5xxx)
     SERVER_ERROR: { code: 5001, message: 'Internal Server Error', status: 500 },
     DATABASE_ERROR: { code: 5002, message: 'Database operation failed', status: 500 },
-};
+} as const;
 
-export type ErrorCode = typeof ErrorCodes[keyof typeof ErrorCodes];
+export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];

@@ -1,9 +1,9 @@
-import { calculateMulipliers } from '../utils/discount';
-import { canRedeemPoints, getRedeemableOptions } from '../utils/discount';
+import { calculateMulipliers } from '../../utils/discount';
+import { canRedeemPoints, getRedeemableOptions } from '../../utils/discount';
 
-import { Customer } from '../types/customer';
-import { BasketResponse } from '../types/basket';
-import { Store } from '../types/restaurant';
+import { Customer } from '../../types/customer';
+import { BasketResponse } from '../../types/basket';
+import { Store } from '../../types/restaurant';
 
 export function getLoyaltyInfo(customer: Customer, basket: BasketResponse, store: Store) {
     const {

@@ -1,13 +1,15 @@
-import { calculateMulipliers } from '../utils/discount';
+import { calculateMulipliers } from '../../utils/discount';
+import { getTier } from '../../utils/tier';
+
 import { 
     ICustomerRepository, 
     IBasketRepository, 
     IPointsLedgerRepository 
-} from '../repositories/interfaces';
+} from '../../repositories/interfaces';
 
-import { Customer } from '../types/customer';
-import { BasketEntity } from '../types/basket';
-import { Store } from '../types/restaurant';
+import { Customer } from '../../types/customer';
+import { BasketEntity } from '../../types/basket';
+import { Store } from '../../types/restaurant';
 
 export async function completeOrderService(
     customer: Customer, 
@@ -32,11 +34,15 @@ export async function completeOrderService(
     const rewardRate = store.loyaltyPartner.rewardRate || 0;
     const pointsEarned = Math.floor(orderTotal * rewardRate * totalMult);
 
+    // Check for tier updates
+    const newTotalSpent = customer.totalSpent + orderTotal;
+    const newTier = getTier(newTotalSpent);
+
     await customerRepo.update(customer.customerId, {
         points: customer.points + pointsEarned,
-        totalSpent: customer.totalSpent + orderTotal,
+        totalSpent: newTotalSpent,
         orderCount: (customer.orderCount || 0) + 1,
-        tier: tierName
+        tier: newTier
     });
 
     await ledgerRepo.create({
@@ -77,7 +83,7 @@ export async function completeOrderService(
             phone: customer.phone,
             name: customer.name,
             remainingPoints: customer.points + pointsEarned,
-            tier: tierName,
+            tier: newTier,
             tierMultiplier: `${tierMult}`,
             birthdayMultiplier: birthdayMult === 1.5 ? '1.5' : '1.0',
             totalMultiplier: totalMult.toFixed(1),
